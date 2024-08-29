@@ -80,7 +80,7 @@ jobs:
       - name: install awslcli
         run: |
          sudo apt-get install awscli
-      - name: Build, tag, and push image to Amazon ECR
+      - name: launch lambda function
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -88,7 +88,6 @@ jobs:
           ARN: ${{ secrets.ARN }}
           IMAGE_TAG: latest
           REGION: ${{ secrets.AWS_REGION }}
-      - name: launch lambda function
         run: |
          aws lambda create-function --function-name student-performance --package-type Image --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --role $ARN --region $REGION --timeout 300 --memory-size 256
          
