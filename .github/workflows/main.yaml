@@ -79,7 +79,7 @@ jobs:
       
       - name: install awslcli
         run: |
-         sudo apt-get install awscli
+          sudo apt-get install awscli
       - name: launch lambda function
         id: build-image
         env:
@@ -89,7 +89,7 @@ jobs:
           IMAGE_TAG: latest
           REGION: ${{ secrets.AWS_REGION }}
         run: |
-           if aws lambda get-function --function-name student-performance --region $REGION > /dev/null 2>&1; then
+          if aws lambda get-function --function-name student-performance --region $REGION > /dev/null 2>&1; then
             echo "Function exists, updating the function..."
             aws lambda update-function-code --function-name student-performance --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --region $REGION
           else
