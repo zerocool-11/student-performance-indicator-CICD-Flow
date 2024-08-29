@@ -89,7 +89,7 @@ jobs:
           IMAGE_TAG: latest
           REGION: ${{ secrets.AWS_REGION }}
         run: |
-         aws lambda create-function --function-name student-performance --package-type Image --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --role $ARN --region $REGION --timeout 300 --memory-size 256
+         aws lambda update-function-code --function-name student-performance --package-type Image --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --role $ARN --region $REGION --timeout 300 --memory-size 256
          
       # - name: Stop and remove  container if running
       #   run: |
