@@ -89,15 +89,10 @@ jobs:
           IMAGE_TAG: latest
           REGION: ${{ secrets.AWS_REGION }}
         run: |
-         aws lambda update-function-code --function-name student-performance --package-type Image --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --role $ARN --region $REGION --timeout 300 --memory-size 256
-         
-      # - name: Stop and remove  container if running
-      #   run: |
-      #    docker ps -q --filter "name=mltest" | grep -q . && docker stop mltest && docker rm -fv mltest
-       
-      # - name: Run Docker Image to serve users
-      #   run: |
-      #    docker run -d -p 8080:8080 --ipc="host" --name=mltest -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' -e 'AWS_REGION=${{ secrets.AWS_REGION }}'  ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
-      # - name: Clean previous images and containers
-      #   run: |
-      #    docker system prune -f
+           if aws lambda get-function --function-name student-performance --region $REGION > /dev/null 2>&1; then
+            echo "Function exists, updating the function..."
+            aws lambda update-function-code --function-name student-performance --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --region $REGION
+          else
+            echo "Function does not exist, creating a new one..."
+            aws lambda create-function --function-name student-performance --package-type Image --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --role $ARN --region $REGION --timeout 300 --memory-size 256
+          fi   
