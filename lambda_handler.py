@@ -2,8 +2,7 @@
 from flask import Flask,request,render_template
 import numpy as np
 import pandas as pd
-from mangum import Mangum
-
+import awsgi
 from sklearn.preprocessing import StandardScaler
 from src.pipeline.predict_pipeline import CustomData,PredictPipeline
 
@@ -38,13 +37,17 @@ def predict_datapoint():
         results=predict_pipeline.predict(pred_df)
         return render_template('home.html',results=results[0])
     
+# handler = Mangum(app,lifespan="off")
     
 
-if __name__=="__main__":
-    # app.run(host="0.0.0.0",port=8080)        
-    app.run(host='0.0.0.0', port=8080)        
+# if __name__=="__main__":
+#     # app.run(host="0.0.0.0",port=8080)        
+#     app.run(host='0.0.0.0', port=8080)        
 
 
 
 
-handler = Mangum(app)
+def handler(event, context):
+    print("event: ",event)
+    print("context: ",context)
+    return awsgi.response(app, event, context) 
